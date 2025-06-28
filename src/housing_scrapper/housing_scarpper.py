@@ -25,5 +25,11 @@ def get_houses_bs_content(voivodeship, city):
     return soup
 
 
+def get_house_str_info(soup_obj: bs, house_num):
+    ul_tag = soup_obj.find('ul', attrs={'data-sentry-element': 'StyledList'})
+    li_tag = ul_tag.find_all('li')
+    return str(li_tag[house_num].text)
+
+
 soup_obj = get_houses_bs_content('opolskie', 'opole')
-print(soup_obj.prettify())
+print(get_house_str_info(soup_obj, 0))
