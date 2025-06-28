@@ -1,0 +1,61 @@
+# Python
+__pycache__/
+*.py[cod]
+*.so
+*.egg
+*.egg-info/
+dist/
+build/
+.eggs/
+pip-log.txt
+pip-delete-this-directory.txt
+
+# Virtual Environments
+venv/
+env/
+.venv/
+.env/
+ENV/
+env.bak/
+venv.bak/
+
+# Jupyter Notebooks
+.ipynb_checkpoints/
+
+# PyCharm
+.idea/
+
+# VS Code
+.vscode/
+*.code-workspace
+
+# Logs and dumps
+*.log
+*.out
+*.bak
+*.tmp
+*.swp
+*.swo
+*.DS_Store
+
+# Coverage
+.coverage
+coverage.xml
+htmlcov/
+
+# Pytest
+.cache/
+.pytest_cache/
+
+# mypy / Pylint / Flake8
+.mypy_cache/
+.dmypy.json
+.pyre/
+.pylint.d/
+
+# Other
+*.sqlite3
+*.db
+*.parquet
+*.feather
+*.h5
