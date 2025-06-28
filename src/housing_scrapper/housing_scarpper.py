@@ -7,29 +7,28 @@ Created: 28-06-2025
 """
 
 
+from bs4 import BeautifulSoup
 import requests
-from bs4 import BeautifulSoup as bs
+import json
 
 
-HEADERS = {
-    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/114.0.0.0 Safari/537.36",
-    "Accept-Language": "pl-PL,pl;q=0.9",
-}
+def get_raw_next_data_json(voivodeship: str, city: str, page_num: int = 1):
+    url = f"https://www.otodom.pl/pl/wyniki/sprzedaz/mieszkanie/{voivodeship}/{city}?page={page_num}"
+    headers = {
+        "User-Agent": "Mozilla/5.0"
+    }
 
+    response = requests.get(url, headers=headers)
+    soup = BeautifulSoup(response.text, 'html.parser')
+    script_tag = soup.find('script', id="__NEXT_DATA__", type="application/json")
 
-def get_houses_bs_content(voivodeship, city):
-    root_url = f"https://www.otodom.pl/pl/wyniki/sprzedaz/mieszkanie/{voivodeship}/{city}/"
-    page = requests.get(root_url, headers=HEADERS)
-    soup = bs(page.content)
+    if not script_tag:
+        raise Exception("Not found in <script id='__NEXT_DATA__'> tag.")
+
+    json_data = json.loads(script_tag.string)
     
-    return soup
+    return json_data
 
 
-def get_house_str_info(soup_obj: bs, house_num):
-    ul_tag = soup_obj.find('ul', attrs={'data-sentry-element': 'StyledList'})
-    li_tag = ul_tag.find_all('li')
-    return str(li_tag[house_num].text)
-
-
-soup_obj = get_houses_bs_content('opolskie', 'opole')
-print(get_house_str_info(soup_obj, 0))
+data = get_raw_next_data_json("opolskie", "opole", page_num=1)
+print(json.dumps(data, indent=2, ensure_ascii=False))
