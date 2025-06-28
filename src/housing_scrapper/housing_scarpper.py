@@ -37,7 +37,22 @@ def extract_listing_items(next_data_json):
         raise Exception("Not found any house items.")
 
 
-raw_data = fetch_otodom_next_data_json("opolskie", "opole", page_num=1)
-houses_data = extract_listing_items(raw_data)
+def get_item_info(item):
+    title = item.get('title', 'no title')
+    price = item.get('totalPrice', {}).get('value', 'no price')
+    city = item.get('location', {}).get('address', {}).get('city', {}).get('name', 'no city name')
+    area = item.get('areaInSquareMeters', 'no square meters area')
+    rooms = item.get('roomsNumber', 'no rooms')
+    link = f'https://www.otodom.pl/pl/oferta/{item.get('slug', '')}'
 
-print(json.dumps(houses_data, indent=2, ensure_ascii=False))
+    print(f"{title}")
+    print(f"Cena: {price} PLN")
+    print(f"Miasto: {city}")
+    print(f"Powierzchnia: {area} m²")
+    print(f"Pokoje: {rooms}")
+    print(f"Link: {link}")
+
+
+next_data_json = fetch_otodom_next_data_json("opolskie", "opole", page_num=1)
+house_items = extract_listing_items(next_data_json)
+get_item_info(house_items[0])
