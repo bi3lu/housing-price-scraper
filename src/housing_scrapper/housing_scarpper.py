@@ -60,8 +60,12 @@ def extract_listing_items(next_data_json):
 
 
 def get_item_info(item):
-    title = item.get('title', 'no title')
-    price = item.get('totalPrice', {}).get('value', 'no price')
+    title =  item.get('title', 'no title')
+
+    # checks if total_price is None...
+    total_price = item.get('totalPrice')
+    price = total_price.get('value') if isinstance(total_price, dict) else 'no price'
+
     city = item.get('location', {}).get('address', {}).get('city', {}).get('name', 'no city')
     street = item.get('location', {}).get('address', {}).get('street', 'no street')
     area = item.get('areaInSquareMeters', 'no area')
@@ -71,7 +75,16 @@ def get_item_info(item):
     return HouseItem(title, price, city, street, area, rooms, house_url)
 
 
+def get_items_list_from_page(house_items):
+    items_list = list()
+
+    for h_item in house_items:
+        items_list.append(get_item_info(h_item))
+    
+    return items_list
+
+
 next_data_json = fetch_otodom_next_data_json("opolskie", "opole", page_num=1)
 house_items = extract_listing_items(next_data_json)
-item = get_item_info(house_items[0])
-item.print_info()
+items_list = get_items_list_from_page(house_items)
+print(len(items_list))
