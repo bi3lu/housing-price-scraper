@@ -1,4 +1,4 @@
-# Housing Price Scraper – Otodom
+# Housing Scraper – otodom
 
 A simple Python script to scrape apartment sale listings from [otodom.pl](https://www.otodom.pl), for a selected **voivodeship** (region) and **city** in Poland.  
 The results are saved to a CSV file for further analysis or storage.
