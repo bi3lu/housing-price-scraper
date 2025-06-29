@@ -143,7 +143,10 @@ def scrap_multiple_pages(voivodeship: str, city: str, max_page_num: int):
     return all_items_unique
 
 
-MAX_PAGE_NUM = get_max_page_num("opolskie", "opole")
+# entry point:
+VOIDESHIP = 'opolskie'
+CITY = 'opole'
+MAX_PAGE_NUM = get_max_page_num(VOIDESHIP, CITY)
 
-all_items = scrap_multiple_pages('opolskie', 'opole', MAX_PAGE_NUM)
-print(len(all_items))
+
+all_items = scrap_multiple_pages(VOIDESHIP, CITY, MAX_PAGE_NUM)
