@@ -13,11 +13,11 @@ import json
 
 
 class HouseItem:
-    def __init__(self, title, price, city, street, area, rooms, house_url):
+    def __init__(self, title, price, city, address, area, rooms, house_url):
         self.title = title
         self.price = price
         self.city = city
-        self. street = street
+        self. address = address
         self.area = area
         self.rooms = rooms
         self.house_url = house_url
@@ -27,11 +27,11 @@ class HouseItem:
         print(f"Title: {self.title}")
         print(f"Price: {self.price} PLN")
         print(f"City: {self.city}")
-        print(f"Street: {self.street}")
-        print(f"Area: {self.area}")
+        print(f"Address: {self.address}")
+        print(f"Area: {self.area} m²")
         print(f"Rooms: {self.rooms}")
         print(f"Link: {self.house_url}")
-        print('*' * 100 + '\n')
+        print('\n' + '*' * 100 + '\n')
 
 
 def fetch_otodom_next_data_json(voivodeship: str, city: str, page_num: int = 1):
@@ -67,16 +67,20 @@ def get_item_info(item):
     price = total_price.get('value') if isinstance(total_price, dict) else 'no price'
 
     city = item.get('location', {}).get('address', {}).get('city', {}).get('name', 'no city')
-    street = item.get('location', {}).get('address', {}).get('street', 'no street')
+
+    # chekcs if address_obj is None...
+    address_obj = item.get('location', {}).get('address', {}).get('street', 'no street')
+    address = f'{address_obj.get('name')} {address_obj.get('number')}' if isinstance(address_obj, dict) else 'no address'
+
     area = item.get('areaInSquareMeters', 'no area')
     rooms = item.get('roomsNumber', 'no rooms')
     house_url = f"https://www.otodom.pl/pl/oferta/{item.get('slug', '')}"
 
-    return HouseItem(title, price, city, street, area, rooms, house_url)
+    return HouseItem(title, price, city, address, area, rooms, house_url)
 
 
 def get_items_list_from_page(house_items):
-    items_list = list()
+    items_list: list[HouseItem] = list()
 
     for h_item in house_items:
         items_list.append(get_item_info(h_item))
@@ -87,4 +91,6 @@ def get_items_list_from_page(house_items):
 next_data_json = fetch_otodom_next_data_json("opolskie", "opole", page_num=1)
 house_items = extract_listing_items(next_data_json)
 items_list = get_items_list_from_page(house_items)
-print(len(items_list))
+
+for item in items_list:
+    item.print_info()
