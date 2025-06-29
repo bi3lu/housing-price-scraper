@@ -25,7 +25,7 @@ pip install -r requirements.txt
 From the `src/` directory:
 
 ```bash
-python housing_scrapper/housing_scrapper.py
+python housing_scraper/housing_scraper.py
 ```
 
 The script will fetch listings for the configured location and save them to:
