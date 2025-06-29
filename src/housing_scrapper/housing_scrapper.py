@@ -26,6 +26,11 @@ ROOMS_MAP = {
 }
 
 
+HEADERS = {
+    "User-Agent": "Mozilla/5.0"
+}
+
+
 class HouseItem:
     def __init__(self, title, price, area, rooms, house_url, city, address, district=None):
         self.title = title
@@ -50,13 +55,25 @@ class HouseItem:
         print('\n' + '*' * 100 + '\n')
 
 
+def get_max_page_num(voivodeship: str, city: str):
+    test_page = 999 # big number to force redirection to max page
+    url = f"https://www.otodom.pl/pl/wyniki/sprzedaz/mieszkanie/{voivodeship}/{city}?page={test_page}"
+    response = requests.get(url, headers=HEADERS, allow_redirects=True)
+
+    redirected_url = response.url
+
+    if 'page=' in redirected_url:
+        try:
+            return int(redirected_url.split('page=')[1])
+        except ValueError:
+            pass
+
+    return 1
+
+
 def fetch_otodom_next_data_json(voivodeship: str, city: str, page_num: int = 1):
     url = f"https://www.otodom.pl/pl/wyniki/sprzedaz/mieszkanie/{voivodeship}/{city}?page={page_num}"
-    headers = {
-        "User-Agent": "Mozilla/5.0"
-    }
-
-    response = requests.get(url, headers=headers)
+    response = requests.get(url, headers=HEADERS)
     soup = BeautifulSoup(response.text, 'html.parser')
     script_tag = soup.find('script', id="__NEXT_DATA__", type="application/json")
 
@@ -114,9 +131,22 @@ def get_items_list_from_page(house_items):
     return items_list
 
 
-next_data_json = fetch_otodom_next_data_json("opolskie", "opole", page_num=1)
-house_items = extract_listing_items(next_data_json)
-items_list = get_items_list_from_page(house_items)
+def scrap_multiple_pages(voivodeship: str, city: str, max_page_num: int):
+    all_items = list()
 
-for item in items_list:
-    item.print_info()
+    for page_num in range(1, max_page_num + 1):
+        try:
+            next_data_json = fetch_otodom_next_data_json(voivodeship, city, page_num)
+            house_items = extract_listing_items(next_data_json)
+            items_list = get_items_list_from_page(house_items)
+            all_items.extend(items_list)
+        except Exception as e:
+            print(f'Error! | page num: {page_num} | desc: {e} ')
+    
+    return all_items
+
+
+MAX_PAGE_NUM = get_max_page_num("opolskie", "opole")
+
+all_items = scrap_multiple_pages('opolskie', 'opole', MAX_PAGE_NUM)
+print(len(all_items))
