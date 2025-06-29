@@ -10,6 +10,8 @@ Created: 28-06-2025
 from bs4 import BeautifulSoup
 import requests
 import json
+import csv
+import os
 
 
 ROOMS_MAP = {
@@ -143,10 +145,35 @@ def scrap_multiple_pages(voivodeship: str, city: str, max_page_num: int):
     return all_items_unique
 
 
+def save_items_to_csv(items_dict: dict, filename: str):
+    fieldnames = ['title', 'price', 'area', 'rooms', 'url', 'city', 'address', 'district']
+
+    with open(filename, mode='w', newline='', encoding='utf-8') as csv_f:
+        writer = csv.DictWriter(csv_f, fieldnames=fieldnames)
+        writer.writeheader()
+
+        for i in items_dict.values():
+            writer.writerow({
+                'title': i.title,
+                'price': i.price,
+                'area': i.area,
+                'rooms': i.rooms,
+                'url': i.house_url,
+                'city': i.city,
+                'address': i.address,
+                'district': i.district
+            })
+
+
 # entry point:
 VOIDESHIP = 'opolskie'
 CITY = 'opole'
 MAX_PAGE_NUM = get_max_page_num(VOIDESHIP, CITY)
 
 
-all_items = scrap_multiple_pages(VOIDESHIP, CITY, MAX_PAGE_NUM)
+output_path = os.path.join(os.path.dirname(__file__), '..', 'csv_data', f'otodom_{CITY}.csv')
+output_path = os.path.abspath(output_path)
+items_dict = scrap_multiple_pages(VOIDESHIP, CITY, MAX_PAGE_NUM)
+
+
+save_items_to_csv(items_dict, output_path)
