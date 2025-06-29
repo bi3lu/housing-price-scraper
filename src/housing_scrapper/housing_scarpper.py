@@ -27,24 +27,26 @@ ROOMS_MAP = {
 
 
 class HouseItem:
-    def __init__(self, title, price, city, address, area, rooms, house_url):
+    def __init__(self, title, price, area, rooms, house_url, city, address, district=None):
         self.title = title
         self.price = price
-        self.city = city
-        self. address = address
         self.area = area
         self.rooms = rooms
         self.house_url = house_url
+        self.city = city
+        self. address = address
+        self.district = district
     
 
     def print_info(self):
         print(f"Title: {self.title}")
         print(f"Price: {self.price} PLN")
-        print(f"City: {self.city}")
-        print(f"Address: {self.address}")
         print(f"Area: {self.area} m²")
         print(f"Rooms: {self.rooms}")
         print(f"Link: {self.house_url}")
+        print(f"City: {self.city}")
+        print(f"Address: {self.address}")
+        print(f"District: {self.district}")
         print('\n' + '*' * 100 + '\n')
 
 
@@ -80,12 +82,6 @@ def get_item_info(item):
     total_price = item.get('totalPrice')
     price = total_price.get('value') if isinstance(total_price, dict) else 'no price'
 
-    city = item.get('location', {}).get('address', {}).get('city', {}).get('name', 'no city')
-
-    # checks if address_obj is None...
-    address_obj = item.get('location', {}).get('address', {}).get('street', 'no street')
-    address = f'{address_obj.get('name')} {address_obj.get('number')}' if isinstance(address_obj, dict) else 'no address'
-
     area = item.get('areaInSquareMeters', 'no area')
 
     rooms_raw = item.get('roomsNumber')
@@ -93,7 +89,20 @@ def get_item_info(item):
 
     house_url = f"https://www.otodom.pl/pl/oferta/{item.get('slug', '')}"
 
-    return HouseItem(title, price, city, address, area, rooms, house_url)
+    city = item.get('location', {}).get('address', {}).get('city', {}).get('name', 'no city')
+
+    # checks if address_obj is None...
+    address_obj = item.get('location', {}).get('address', {}).get('street', 'no street')
+    address = f'{address_obj.get('name')} {address_obj.get('number')}' if isinstance(address_obj, dict) else 'no address'
+
+    district = None
+    locations = item.get('location', {}).get('reverseGeocoding', {}).get('locations', [])
+    
+    if locations:
+        full_name = locations[-1].get('fullName', '')
+        district = full_name.split(',')[0].strip() if full_name else None
+
+    return HouseItem(title, price, area, rooms, house_url, city, address, district)
 
 
 def get_items_list_from_page(house_items):
