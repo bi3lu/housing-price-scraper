@@ -122,28 +122,25 @@ def get_item_info(item):
     return HouseItem(title, price, area, rooms, house_url, city, address, district)
 
 
-def get_items_list_from_page(house_items):
-    items_list: list[HouseItem] = list()
-
-    for h_item in house_items:
-        items_list.append(get_item_info(h_item))
-    
-    return items_list
-
-
 def scrap_multiple_pages(voivodeship: str, city: str, max_page_num: int):
-    all_items = list()
+    all_items_unique = {}
 
     for page_num in range(1, max_page_num + 1):
         try:
             next_data_json = fetch_otodom_next_data_json(voivodeship, city, page_num)
             house_items = extract_listing_items(next_data_json)
-            items_list = get_items_list_from_page(house_items)
-            all_items.extend(items_list)
+
+            for item in house_items:
+                item_id = item.get('id')
+
+                if item_id not in all_items_unique:
+                    item_obj = get_item_info(item)
+                    all_items_unique[item_id] = item_obj
+
         except Exception as e:
             print(f'Error! | page num: {page_num} | desc: {e} ')
     
-    return all_items
+    return all_items_unique
 
 
 MAX_PAGE_NUM = get_max_page_num("opolskie", "opole")
