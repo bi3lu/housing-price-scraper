@@ -12,6 +12,20 @@ import requests
 import json
 
 
+ROOMS_MAP = {
+    'ONE': 1,
+    'TWO': 2,
+    'THREE': 3,
+    'FOUR': 4,
+    'FIVE': 5,
+    'SIX': 6,
+    'SEVEN': 7,
+    'EIGHT': 8,
+    'NINE': 9,
+    'TEN': 10
+}
+
+
 class HouseItem:
     def __init__(self, title, price, city, address, area, rooms, house_url):
         self.title = title
@@ -68,12 +82,15 @@ def get_item_info(item):
 
     city = item.get('location', {}).get('address', {}).get('city', {}).get('name', 'no city')
 
-    # chekcs if address_obj is None...
+    # checks if address_obj is None...
     address_obj = item.get('location', {}).get('address', {}).get('street', 'no street')
     address = f'{address_obj.get('name')} {address_obj.get('number')}' if isinstance(address_obj, dict) else 'no address'
 
     area = item.get('areaInSquareMeters', 'no area')
-    rooms = item.get('roomsNumber', 'no rooms')
+
+    rooms_raw = item.get('roomsNumber')
+    rooms = ROOMS_MAP.get(rooms_raw, 'unknown number of rooms')
+
     house_url = f"https://www.otodom.pl/pl/oferta/{item.get('slug', '')}"
 
     return HouseItem(title, price, city, address, area, rooms, house_url)
