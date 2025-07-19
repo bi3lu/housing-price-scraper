@@ -51,6 +51,10 @@ def handle_rent_missing(df: pd.DataFrame, method='nan'):
     return df
 
 
+def save_data(df: pd.DataFrame, city: str, path: str):
+    df.to_csv(f'{path}/{city}.csv', index=False)
+
+
 # entry point:
 CITY = 'opole'
 PATH = '../csv_data/processed'
@@ -61,3 +65,4 @@ df = preprocess_types(df)
 df = encode_address(df)
 df = encode_categoricals(df)
 df = handle_rent_missing(df)
+save_data(df, CITY, PATH)
