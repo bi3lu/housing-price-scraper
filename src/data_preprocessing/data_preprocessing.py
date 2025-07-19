@@ -27,13 +27,15 @@ def preprocess_types(df: pd.DataFrame):
     return df
 
 
-address_mean = df.groupby('address')['price'].mean()
-df['address_encoded'] = df['address'].map(address_mean)
-df = df.drop(['address'], axis=1)
+def encode_address(df: pd.DataFrame):
+    address_mean = df.groupby('address')['price'].mean()
+    df['address_encoded'] = df['address'].map(address_mean)
+    return df.drop(['address'], axis=1)
+
+
 
 categorical_cols = ['district', 'floor_no', 'heating_info', 'building_type']
 df = pd.get_dummies(df, columns=categorical_cols, drop_first=True)
-
 df.to_csv(f'../csv_data/processed/{CITY}.csv')
 
 
@@ -44,3 +46,4 @@ PATH = '../csv_data/processed'
 
 df = load_data(CITY, PATH)
 df = preprocess_types(df)
+df = encode_adress(df)
