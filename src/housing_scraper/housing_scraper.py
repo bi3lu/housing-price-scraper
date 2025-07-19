@@ -171,7 +171,7 @@ CITY = 'opole'
 MAX_PAGE_NUM = get_max_page_num(VOIDESHIP, CITY)
 
 
-output_path = os.path.join(os.path.dirname(__file__), '..', 'csv_data', f'otodom_{CITY}.csv')
+output_path = os.path.join(os.path.dirname(__file__), '..', 'csv_data/temp', f'otodom_{CITY}.csv')
 output_path = os.path.abspath(output_path)
 items_dict = scrap_multiple_pages(VOIDESHIP, CITY, MAX_PAGE_NUM)
 

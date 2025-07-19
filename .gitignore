@@ -59,3 +59,6 @@ htmlcov/
 *.parquet
 *.feather
 *.h5
+
+# CSV Data
+csv_data
