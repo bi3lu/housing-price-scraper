@@ -11,7 +11,10 @@ import pandas as pd
 import numpy as np
 
 
-CITY = 'opole'
+def load_data(city: str, path: str):
+    df = pd.read_csv(f'{path}/{city}.csv')
+    df = df.drop(['title', 'url', 'city'], axis=1)
+    return df
 
 
 df = pd.read_csv(f'../csv_data/raw/{CITY}.csv')
@@ -36,3 +39,11 @@ categorical_cols = ['district', 'floor_no', 'heating_info', 'building_type']
 df = pd.get_dummies(df, columns=categorical_cols, drop_first=True)
 
 df.to_csv(f'../csv_data/processed/{CITY}.csv')
+
+
+# entry point:
+CITY = 'opole'
+PATH = '../csv_data/processed'
+
+
+df = load_data(CITY, PATH)
