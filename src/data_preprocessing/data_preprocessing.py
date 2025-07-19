@@ -39,6 +39,18 @@ def encode_categoricals(df: pd.DataFrame):
     return df
 
 
+def handle_rent_missing(df: pd.DataFrame, method='nan'):
+    if method == 'median':
+        df['rent'] = df['rent'].fillna(df['rent'].median())
+    elif method == 'zero':
+        df['rent'] = df['rent'].fillna(0)
+    elif method == 'drop':
+        df = df.dropna(subset=['rent'])
+    elif method == 'nan':
+        pass
+    return df
+
+
 # entry point:
 CITY = 'opole'
 PATH = '../csv_data/processed'
@@ -48,3 +60,4 @@ df = load_data(CITY, PATH)
 df = preprocess_types(df)
 df = encode_address(df)
 df = encode_categoricals(df)
+df = handle_rent_missing(df)
