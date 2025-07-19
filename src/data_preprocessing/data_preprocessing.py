@@ -17,19 +17,15 @@ def load_data(city: str, path: str):
     return df
 
 
-df = pd.read_csv(f'../csv_data/raw/{CITY}.csv')
-df.reset_index(drop=True)
-df = df.drop(['title', 'url', 'city'], axis=1)
+def preprocess_types(df: pd.DataFrame):
+    df['rent'] = df['rent'].replace('none', np.nan)
+    df['rent'] = pd.to_numeric(df['rent'], errors='coerce')
+    df['rooms'] = pd.to_numeric(df['rooms'], errors='coerce')
+    df['price'] = pd.to_numeric(df['price'], errors='coerce')
+    df = df.dropna(subset=['price'])
+    df['price'] = df['price'].astype('int32')
+    return df
 
-df['rent'] = df['rent'].replace('none', np.nan)
-
-df['rent'] = pd.to_numeric(df['rent'], errors='coerce')
-
-df['rooms'] = pd.to_numeric(df['rooms'], errors='coerce')
-
-df['price'] = pd.to_numeric(df['price'], errors='coerce')
-df = df.dropna(subset=['price'])
-df['price'] = df['price'].astype('int32')
 
 address_mean = df.groupby('address')['price'].mean()
 df['address_encoded'] = df['address'].map(address_mean)
@@ -47,3 +43,4 @@ PATH = '../csv_data/processed'
 
 
 df = load_data(CITY, PATH)
+df = preprocess_types(df)
