@@ -1,0 +1,38 @@
+# -*- coding: utf-8 -*-
+"""
+Description:
+
+Author: Jakub Bielecki
+Created: 19-07-2025
+"""
+
+
+import pandas as pd
+import numpy as np
+
+
+CITY = 'opole'
+
+
+df = pd.read_csv(f'../csv_data/raw/{CITY}.csv')
+df.reset_index(drop=True)
+df = df.drop(['title', 'url', 'city'], axis=1)
+
+df['rent'] = df['rent'].replace('none', np.nan)
+
+df['rent'] = pd.to_numeric(df['rent'], errors='coerce')
+
+df['rooms'] = pd.to_numeric(df['rooms'], errors='coerce')
+
+df['price'] = pd.to_numeric(df['price'], errors='coerce')
+df = df.dropna(subset=['price'])
+df['price'] = df['price'].astype('int32')
+
+address_mean = df.groupby('address')['price'].mean()
+df['address_encoded'] = df['address'].map(address_mean)
+df = df.drop(['address'], axis=1)
+
+categorical_cols = ['district', 'floor_no', 'heating_info', 'building_type']
+df = pd.get_dummies(df, columns=categorical_cols, drop_first=True)
+
+df.to_csv(f'../csv_data/processed/{CITY}.csv')

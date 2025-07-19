@@ -5,6 +5,8 @@ Description:
 Author: Jakub Bielecki
 Created: 17-07-2025
 """
+
+
 import pandas as pd
 import requests
 import json
