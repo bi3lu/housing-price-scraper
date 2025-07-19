@@ -57,12 +57,13 @@ def save_data(df: pd.DataFrame, city: str, path: str):
 
 # entry point:
 CITY = 'opole'
-PATH = '../csv_data/processed'
+RAW_PATH = '../csv_data/raw'
+PROCESSED_PATH = '../csv_data/processed'
 
 
-df = load_data(CITY, PATH)
+df = load_data(CITY, RAW_PATH)
 df = preprocess_types(df)
 df = encode_address(df)
 df = encode_categoricals(df)
 df = handle_rent_missing(df)
-save_data(df, CITY, PATH)
+save_data(df, CITY, PROCESSED_PATH)
