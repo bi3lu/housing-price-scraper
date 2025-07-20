@@ -66,7 +66,7 @@ def save_model(model, path: str = 'xgb_model.joblib'):
 
 
 # entry point:
-PATH = '../csv_data/processed'
+PATH = '../../csv_data/processed'
 CITY = 'opole'
 
 
