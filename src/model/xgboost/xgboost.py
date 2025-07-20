@@ -45,18 +45,24 @@ def evaluate_model(model, X_test, y_test):
     y_pred = model.predict(X_test)
     r2 = r2_score(y_test, y_pred)
     mae = mean_absolute_error(y_test, y_pred)
-    rmae = mae / y_test.mean()
+    rmse = np.sqrt(mae)
     return {
         'R2': r2,
         'MAE': mae,
-        'RMAE': rmae
+        'RMSE': rmse
     }
 
 
-def save_model_report(metrics: dict, path: str = 'model_report.txt'):
+def save_model_report(metrics: dict, path: str = 'xgb_model_report.txt'):
     with open(path, 'w') as f:
         for k, v in metrics.items():
             f.write(f'{k}: {v:.4f}\n')
+    return None
+
+
+def save_model(model, path: str = 'xgb_model.joblib'):
+    joblib.dump(model, path)
+    return None
 
 
 # entry point:
@@ -68,3 +74,7 @@ df = load_data(CITY, PATH)
 X_train, X_test, y_train, y_test = split_data(df)
 model = train_model(X_train, y_train)
 metrics = evaluate_model(model, X_test, y_test)
+
+
+save_model_report(metrics)
+save_model(model)
