@@ -12,8 +12,9 @@ from sklearn.model_selection import train_test_split
 from xgboost import XGBRegressor
 
 
-PATH = '../csv_data/processed'
-CITY = 'opole'
+def load_data(city: str, path: str):
+    df = pd.read_csv(f'{path}/{city}.csv')
+    return df
 
 
 df = pd.read_cs(f'{PATH}/{CITY}.csv')
@@ -33,3 +34,11 @@ model = XGBRegressor(
 )
 
 model.fit(X_train, y_train)
+
+
+# entry point:
+PATH = '../csv_data/processed'
+CITY = 'opole'
+
+
+df = load_data(CITY, PATH)
