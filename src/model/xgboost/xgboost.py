@@ -24,17 +24,18 @@ def split_data(df: pd.DataFrame):
     return (X_train, X_test, y_train, y_test)
 
 
-model = XGBRegressor(
-    n_estimators=100,
-    learning_rate=0.1,
-    max_depth=6,
-    random_state=42,
-    n_jobs=-1,
-    tree_method='hist',
-    enable_categorical=False
-)
-
-model.fit(X_train, y_train)
+def train_model(x_train, y_train):
+    model = XGBRegressor(
+        n_estimators=100,
+        learning_rate=0.1,
+        max_depth=6,
+        random_state=42,
+        n_jobs=-1,
+        tree_method='hist',
+        enable_categorical=False
+    )
+    model.fit(x_train, y_train)
+    return model
 
 
 # entry point:
@@ -44,3 +45,4 @@ CITY = 'opole'
 
 df = load_data(CITY, PATH)
 X_train, X_test, y_train, y_test = split_data(df)
+model = train_model(X_train, y_train)
