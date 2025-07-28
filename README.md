@@ -1,18 +1,15 @@
-# Housing Scraper – otodom
+# Housing Scraper – Otodom
 
-A simple Python script to scrape apartment sale listings from [otodom.pl](https://www.otodom.pl), for a selected **voivodeship** (region) and **city** in Poland.  
-The results are saved to a CSV file for further analysis or storage.
+A modular Python pipeline to **scrape**, **enrich**, **preprocess**, and **train a model** on apartment sale listings from [otodom.pl](https://www.otodom.pl), for a selected **voivodeship** (region) and **city** in Poland.
+
+The pipeline extracts data, processes features, and trains an XGBoost regression model to predict apartment prices.
 
 ---
 
 ## Requirements
 
 - Python 3.7 or higher
-- Python packages:
-  - `requests`
-  - `beautifulsoup4`
-
-Install dependencies:
+- Install dependencies:
 
 ```bash
 pip install -r requirements.txt
@@ -20,34 +17,57 @@ pip install -r requirements.txt
 
 ---
 
-## How to Run
+## How to run
 
-From the `src/` directory:
-
+### 1. Scrape data from otodom
 ```bash
 python housing_scraper/housing_scraper.py
 ```
 
-The script will fetch listings for the configured location and save them to:
+This saves listings to:
+```bash
+csv_data/temp/otodom_<city>.csv
+```
 
+### 2. Enrich scraped data with extra details
+```bash
+python housing_scraper/housing_scraper_sup.py
 ```
-csv_data/otodom_<city>.csv
+
+This outputs:
+```bash
+csv_data/raw/<city>.csv
 ```
+
+### 3. Preprocess the data
+```bash
+python data_preprocessing.py
+```
+
+Processed data is saved to:
+```bash
+csv_data/processed/<city>.csv
+```
+
+### 4. Train the model
+```bash
+python xboost_model.py
+```
+
+Generates:
+- `xgb_model.joblib` (saved model)
+- `xgb_model_report.txt` (R², MAE, RMSE)
 
 ---
 
 ## Features
-
-- Automatically detects the total number of listing pages.
-- Handles missing values (e.g., hidden prices or incomplete addresses).
-- Removes duplicate listings by ID.
-- Extracts key information:
-  - Title, price, area, number of rooms
-  - City, street address, district
-  - Listing URL
+- Automatically detects the number of listing pages (pagination).
+- Handles missing values (rent, price, rooms, etc.).
+- Encodes categorical features (floor, heating, building type, district, etc.).
+- Trains XGBoost regression model to predict apartment prices.
+- Saves model and evaluation report.
 
 ---
 
 ## Author
-
-Jakub Bielecki
+*Jakub Bielecki*
