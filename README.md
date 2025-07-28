@@ -71,5 +71,10 @@ Generates:
 
 ---
 
+## Ethical Use
+Please use this project responsibly. The scraper is intended for small-scale, educational use only. Do not use it for mass data extraction or commercial purposes. Respect the terms of service of websites you interact with.
+
+---
+
 ## Author
 *Jakub Bielecki*
