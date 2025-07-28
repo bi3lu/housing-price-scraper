@@ -20,14 +20,23 @@ pip install -r requirements.txt
 ## Project structure
 
 src/
+
 ├── data_preprocessing/
+
 │   ├── data_preprocessing.py     # Data cleaning and encoding
+
 ├── housing_scraper/              # Web scraping scripts
+
 │   ├── housing_scraper_sup.py    # Enrichment of raw data with details
+
 │   ├── housing_scraper.py        # Main scraper
+
 ├── model/
+
 │   ├── xgboost_model/
+
 │   |  ├── xgboost_model.py       # XGBoost model training and evaluation
+
 ├── requirements.txt
 
 ---
