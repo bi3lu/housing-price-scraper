@@ -1,6 +1,10 @@
 # -*- coding: utf-8 -*-
 """
-Description:
+housing_scarper.py
+
+This script scrapes apartment listing data from Otodom (a Polish real estate website)
+for a given voivodeship and city. It collects details such as title, price, area, number 
+of rooms, address, and district from multiple pages of results and saves the data into a CSV file.
 
 Author: Jakub Bielecki
 Created: 28-06-2025
@@ -34,6 +38,9 @@ HEADERS = {
 
 
 class HouseItem:
+    """
+    Represents a single house/apartment listing.
+    """
     def __init__(self, title, price, area, rooms, house_url, city, address, district=None):
         self.title = title
         self.price = price
@@ -41,11 +48,14 @@ class HouseItem:
         self.rooms = rooms
         self.house_url = house_url
         self.city = city
-        self. address = address
+        self.address = address
         self.district = district
     
 
     def print_info(self):
+        """
+        Print formatted information about the listing.
+        """
         print(f"Title: {self.title}")
         print(f"Price: {self.price} PLN")
         print(f"Area: {self.area} m²")
@@ -58,7 +68,17 @@ class HouseItem:
 
 
 def get_max_page_num(voivodeship: str, city: str):
-    test_page = 999 # big number to force redirection to max page
+    """
+    Determines the number of pages available for listings in the given location.
+
+    Parameters:
+        voivodeship (str): The voivodeship (province) name.
+        city (str): The city name.
+
+    Returns:
+        int: The maximum page number.
+    """
+    test_page = 999 # Large number to trigger redirect to the last page
     url = f"https://www.otodom.pl/pl/wyniki/sprzedaz/mieszkanie/{voivodeship}/{city}?page={test_page}"
     response = requests.get(url, headers=HEADERS, allow_redirects=True)
 
@@ -74,6 +94,17 @@ def get_max_page_num(voivodeship: str, city: str):
 
 
 def fetch_otodom_next_data_json(voivodeship: str, city: str, page_num: int = 1):
+    """
+    Fetches the JSON data from the Otodom listing page.
+
+    Parameters:
+        voivodeship (str): The voivodeship name.
+        city (str): The city name.
+        page_num (int): The page number to fetch.
+
+    Returns:
+        dict: Parsed JSON data embedded in the page.
+    """
     url = f"https://www.otodom.pl/pl/wyniki/sprzedaz/mieszkanie/{voivodeship}/{city}?page={page_num}"
     response = requests.get(url, headers=HEADERS)
     soup = BeautifulSoup(response.text, 'html.parser')
@@ -88,6 +119,15 @@ def fetch_otodom_next_data_json(voivodeship: str, city: str, page_num: int = 1):
 
 
 def extract_listing_items(next_data_json):
+    """
+    Extracts listing items from the embedded JSON data.
+
+    Parameters:
+        next_data_json (dict): Parsed JSON object from the Otodom page.
+
+    Returns:
+        list: List of raw listing items.
+    """
     try:
         return next_data_json['props']['pageProps']['data']['searchAds']['items']
     except KeyError:
@@ -95,6 +135,15 @@ def extract_listing_items(next_data_json):
 
 
 def get_item_info(item):
+    """
+    Extracts relevant details from a single listing item.
+
+    Parameters:
+        item (dict): A single listing item from the Otodom JSON data.
+
+    Returns:
+        HouseItem: An object representing the listing.
+    """
     title =  item.get('title', 'no title')
 
     # checks if total_price is None...
@@ -110,7 +159,6 @@ def get_item_info(item):
 
     city = item.get('location', {}).get('address', {}).get('city', {}).get('name', 'no city')
 
-    # checks if address_obj is None...
     address_obj = item.get('location', {}).get('address', {}).get('street', 'no street')
     address = f'{address_obj.get('name')} {address_obj.get('number')}' if isinstance(address_obj, dict) else 'no address'
 
@@ -125,6 +173,17 @@ def get_item_info(item):
 
 
 def scrap_multiple_pages(voivodeship: str, city: str, max_page_num: int):
+    """
+    Scrapes all pages of listings and collects unique results.
+
+    Parameters:
+        voivodeship (str): The voivodeship name.
+        city (str): The city name.
+        max_page_num (int): The number of pages to scrape.
+
+    Returns:
+        dict: A dictionary of unique HouseItem objects, keyed by listing ID.
+    """
     all_items_unique = {}
 
     for page_num in range(1, max_page_num + 1):
@@ -146,6 +205,13 @@ def scrap_multiple_pages(voivodeship: str, city: str, max_page_num: int):
 
 
 def save_items_to_csv(items_dict: dict, filename: str):
+    """
+    Saves the scraped house items into a CSV file.
+
+    Parameters:
+        items_dict (dict): Dictionary of HouseItem objects.
+        filename (str): Output path for the CSV file.
+    """
     fieldnames = ['title', 'price', 'area', 'rooms', 'url', 'city', 'address', 'district']
 
     with open(filename, mode='w', newline='', encoding='utf-8') as csv_f:
@@ -165,7 +231,7 @@ def save_items_to_csv(items_dict: dict, filename: str):
             })
 
 
-# entry point:
+# Entry point for processing
 VOIDESHIP = 'opolskie'
 CITY = 'opole'
 MAX_PAGE_NUM = get_max_page_num(VOIDESHIP, CITY)
