@@ -4,6 +4,8 @@ A modular Python pipeline to **scrape**, **enrich**, **preprocess**, and **train
 
 The pipeline extracts data, processes features, and trains an XGBoost regression model to predict apartment prices.
 
+⚠️ Disclaimer: This project is created for educational and research purposes only. The scraper is designed to collect a limited amount of publicly available data from otodom.pl in a respectful manner, without putting strain on the website or violating its infrastructure. No scraped data is stored or distributed through this repository. This project is not affiliated with otodom, nor is it intended to create a competing service or commercial product.
+
 ---
 
 ## Requirements
