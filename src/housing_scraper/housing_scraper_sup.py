@@ -111,7 +111,6 @@ def enrich_with_details(df: pd.DataFrame) -> pd.DataFrame:
 # Entry point for processing
 CITY = 'opole'
 
-
 df = load_input_data(CITY)
 enriched_df = enrich_with_details(df)
 enriched_df.to_csv(f'../csv_data/raw/{CITY}.csv', index=False)

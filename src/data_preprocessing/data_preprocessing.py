@@ -120,7 +120,6 @@ CITY = 'opole'
 RAW_PATH = '../csv_data/raw'
 PROCESSED_PATH = '../csv_data/processed'
 
-
 df = load_data(CITY, RAW_PATH)
 df = preprocess_types(df)
 df = encode_address(df)
